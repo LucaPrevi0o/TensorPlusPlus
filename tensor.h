@@ -2,6 +2,7 @@
 #define TENSOR_H
 
 #include <stdio.h>
+// TODO: an awful lot of refactoring, especially because of broadcasting
 
 namespace tensor {
 
