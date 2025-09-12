@@ -1,9 +1,9 @@
-# tensor.h
-Header C++ per tensori multi-dimensionali
+# Tensor++ - Libreria C++ per tensori multi-dimensionali
 
 ## Descrizione
 
-`tensor.h` è un header C++ che fornisce una classe template generica per la gestione di tensori (array multi-dimensionali) di qualsiasi tipo e dimensione. Include operatori matematici, funzioni di utilità per matrici e tuple, e supporto per operazioni avanzate come contrazione di tensori e calcolo del determinante.
+Tensor++ è una libreria C++ che fornisce una classe template generica per la gestione di tensori (array multi-dimensionali) di qualsiasi tipo e dimensione.
+Include operatori matematici, funzioni di utilità per matrici e tuple, e supporto per operazioni avanzate come contrazione di tensori e calcolo del determinante.
 
 ## Funzionalità principali
 - Classe `tensor<A, N>`: tensore generico di tipo `A` e dimensione `N`
@@ -39,11 +39,19 @@ tuple<int> v(5);        // Tuple di 5 elementi
 
 ### Funzioni di utilità
 ```cpp
-auto mt = tensor::T(m);         // Trasposizione
-auto trace = tensor::tr(m);     // Traccia
-auto det = tensor::det(m);      // Determinante
-auto subm = tensor::submatrix(m, tuple<int>(1), tuple<int>(1)); // Submatrice
-auto adj = tensor::adj(m);      // Adjugata
+auto mt    = tensor::T(m);                                       // Matrice trasposta
+auto trace = tensor::tr(m);                                      // Traccia della matrice
+auto det   = tensor::det(m);                                     // Determinante della matrice
+auto adj   = tensor::adj(m);                                     // Matrice aggiunta
+
+// Righe e colonne della sottomatrice
+auto row   = tensor::tuple<int>(1);
+auto col   = tensor::tuple<int>(2);
+
+row(0)     = 1; // Riga 1 della matrice da rimuovere
+col(0)     = 3; // Colonna 3 della matrice da rimuovere
+col(1)     = 4; // Colonna 4 della matrice da rimuovere
+auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe/colonne
 ```
 
 ## API Principali
