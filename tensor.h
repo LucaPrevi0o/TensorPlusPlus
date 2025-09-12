@@ -1,6 +1,8 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
+#include <stdio.h>
+
 namespace tensor {
 
     /**
@@ -125,10 +127,49 @@ namespace tensor {
              */
             tensor operator+(const tensor& other) const {
 
-                check_indices(other); // Check if the sizes of the tensors match
-                tensor result(*this); // Create a new tensor to hold the result
-                for (int i = 0; i < length(); i++) result.data[i] = data[i] + other.data[i]; // Add the elements of the tensors
-                return result; // Return the resulting tensor
+                // Broadcasting: consenti somma se tutte le dimensioni coincidono tranne una che è 1
+                int broadcast_dim = -1;
+                for (int i = 0; i < N; ++i) if (capacity[i] != other.capacity[i]) {
+
+                    if (capacity[i] == 1 && other.capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i; // this tensor va broadcastato
+                    else if (other.capacity[i] == 1 && capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i; // other tensor va broadcastato
+                    else throw "Index does not match tensor dimensions (broadcasting non valido)";
+                }
+
+                tensor result(*this);
+                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) result.data[i] = data[i] + other.data[i];
+                else {
+                    
+                    // Broadcasting su broadcast_dim
+                    // Calcola gli strides
+                    int strides[N];
+                    strides[N-1] = 1;
+                    for (int i = N-2; i >= 0; --i) strides[i] = strides[i+1] * capacity[i+1];
+
+                    for (int idx = 0; idx < length(); ++idx) {
+
+                        // Ricava gli indici multi-dimensionali
+                        int indices[N];
+                        int tmp = idx;
+                        for (int d = 0; d < N; ++d) {
+
+                            indices[d] = tmp / strides[d];
+                            tmp = tmp % strides[d];
+                        }
+                        // Calcola l'indice nell'altro tensore
+                        int other_idx = 0;
+                        int other_strides[N];
+                        other_strides[N-1] = 1;
+                        for (int i = N-2; i >= 0; --i) other_strides[i] = other_strides[i+1] * other.capacity[i+1];
+                        for (int d = 0; d < N; ++d) {
+
+                            int ind = (other.capacity[d] == 1) ? 0 : indices[d];
+                            other_idx += ind * other_strides[d];
+                        }
+                        result.data[idx] = data[idx] + other.data[other_idx];
+                    }
+                }
+                return result;
             }
 
             /**
@@ -167,9 +208,42 @@ namespace tensor {
              */
             tensor operator+=(const tensor& other) {
 
-                check_indices(other); // Check if the sizes of the tensors match
-                for (int i = 0; i < length(); i++) data[i] += other.data[i]; // Add the elements of the tensors
-                return *this; // Return the current tensor
+                // Broadcasting: consenti somma se tutte le dimensioni coincidono tranne una che è 1
+                int broadcast_dim = -1;
+                for (int i = 0; i < N; ++i) if (capacity[i] != other.capacity[i]) {
+
+                    if (capacity[i] == 1 && other.capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else if (other.capacity[i] == 1 && capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else throw "Index does not match tensor dimensions (broadcasting non valido)";
+                }
+                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) data[i] += other.data[i];
+                else {
+
+                    int strides[N];
+                    strides[N-1] = 1;
+                    for (int i = N-2; i >= 0; --i) strides[i] = strides[i+1] * capacity[i+1];
+                    for (int idx = 0; idx < length(); ++idx) {
+
+                        int indices[N];
+                        int tmp = idx;
+                        for (int d = 0; d < N; ++d) {
+
+                            indices[d] = tmp / strides[d];
+                            tmp = tmp % strides[d];
+                        }
+                        int other_idx = 0;
+                        int other_strides[N];
+                        other_strides[N-1] = 1;
+                        for (int i = N-2; i >= 0; --i) other_strides[i] = other_strides[i+1] * other.capacity[i+1];
+                        for (int d = 0; d < N; ++d) {
+
+                            int ind = (other.capacity[d] == 1) ? 0 : indices[d];
+                            other_idx += ind * other_strides[d];
+                        }
+                        data[idx] += other.data[other_idx];
+                    }
+                }
+                return *this;
             }
 
             /**
@@ -193,10 +267,43 @@ namespace tensor {
              */
             tensor operator-(const tensor& other) const {
 
-                check_indices(other); // Check if the sizes of the tensors match
-                tensor result(*this); // Create a new tensor to hold the result
-                for (int i = 0; i < length(); i++) result.data[i] = data[i] - other.data[i]; // Subtract the elements of the tensors
-                return result; // Return the resulting tensor
+                // Broadcasting: consenti sottrazione se tutte le dimensioni coincidono tranne una che è 1
+                int broadcast_dim = -1;
+                for (int i = 0; i < N; ++i) if (capacity[i] != other.capacity[i]) {
+
+                    if (capacity[i] == 1 && other.capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else if (other.capacity[i] == 1 && capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else throw "Index does not match tensor dimensions (broadcasting non valido)";
+                }
+
+                tensor result(*this);
+                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) result.data[i] = data[i] - other.data[i];
+                else {
+
+                    int strides[N];
+                    strides[N-1] = 1;
+                    for (int i = N-2; i >= 0; --i) strides[i] = strides[i+1] * capacity[i+1];
+                    for (int idx = 0; idx < length(); ++idx) {
+                        int indices[N];
+                        int tmp = idx;
+                        for (int d = 0; d < N; ++d) {
+
+                            indices[d] = tmp / strides[d];
+                            tmp = tmp % strides[d];
+                        }
+                        int other_idx = 0;
+                        int other_strides[N];
+                        other_strides[N-1] = 1;
+                        for (int i = N-2; i >= 0; --i) other_strides[i] = other_strides[i+1] * other.capacity[i+1];
+                        for (int d = 0; d < N; ++d) {
+
+                            int ind = (other.capacity[d] == 1) ? 0 : indices[d];
+                            other_idx += ind * other_strides[d];
+                        }
+                        result.data[idx] = data[idx] - other.data[other_idx];
+                    }
+                }
+                return result;
             }
 
             /**
@@ -235,9 +342,42 @@ namespace tensor {
              */
             tensor operator-=(const tensor& other) {
 
-                check_indices(other); // Check if the sizes of the tensors match
-                for (int i = 0; i < length(); i++) data[i] -= other.data[i]; // Subtract the elements of the tensors
-                return *this; // Return the current tensor
+                // Broadcasting: consenti sottrazione se tutte le dimensioni coincidono tranne una che è 1
+                int broadcast_dim = -1;
+                for (int i = 0; i < N; ++i) if (capacity[i] != other.capacity[i]) {
+
+                    if (capacity[i] == 1 && other.capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else if (other.capacity[i] == 1 && capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
+                    else throw "Index does not match tensor dimensions (broadcasting non valido)";
+                }
+                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) data[i] -= other.data[i];
+                else {
+
+                    int strides[N];
+                    strides[N-1] = 1;
+                    for (int i = N-2; i >= 0; --i) strides[i] = strides[i+1] * capacity[i+1];
+                    for (int idx = 0; idx < length(); ++idx) {
+
+                        int indices[N];
+                        int tmp = idx;
+                        for (int d = 0; d < N; ++d) {
+
+                            indices[d] = tmp / strides[d];
+                            tmp = tmp % strides[d];
+                        }
+                        int other_idx = 0;
+                        int other_strides[N];
+                        other_strides[N-1] = 1;
+                        for (int i = N-2; i >= 0; --i) other_strides[i] = other_strides[i+1] * other.capacity[i+1];
+                        for (int d = 0; d < N; ++d) {
+                            
+                            int ind = (other.capacity[d] == 1) ? 0 : indices[d];
+                            other_idx += ind * other_strides[d];
+                        }
+                        data[idx] -= other.data[other_idx];
+                    }
+                }
+                return *this;
             }
 
             /**
