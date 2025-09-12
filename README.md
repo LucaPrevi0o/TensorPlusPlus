@@ -1,5 +1,4 @@
 # tensor.h
-
 Header C++ per tensori multi-dimensionali
 
 ## Descrizione
@@ -51,15 +50,15 @@ auto adj = tensor::adj(m);      // Adjugata
 
 ### Classe `tensor<A, N>`
 - Costruttori: dimensioni variabili, copia, assegnazione
-- Operatori: 
-- Metodi statici: `zero(...)`, `identity(...)`
+- Operatori: somma, sottrazione, moltiplicazione
+- Metodi statici: `matrix<A> zero(...)` (matrice nulla), `matrix<A> identity(...)` (matrice identità)
 
 ### Funzioni globali
-- `T(matrix<A>)` — trasposizione
-- `tr(matrix<A>)` — traccia
-- `submatrix(matrix<A>, tuple<int>, tuple<int>)` — submatrice
-- `adj(matrix<A>)` — adjugata
-- `det(matrix<A>)` — determinante
+- `matrix<A> T(matrix<A>)` — trasposizione
+- `A tr(matrix<A>)` — traccia
+- `matrix<A> submatrix(matrix<A>, tuple<int>, tuple<int>)` — sottomatrice
+- `matrix<A> adj(matrix<A>)` — matrice aggiunta
+- `A det(matrix<A>)` — determinante
 
 ## Esempio completo
 ```cpp
@@ -81,6 +80,9 @@ int main() {
 - Tutte le operazioni sono template per efficienza e flessibilità
 - Gli errori di dimensione e indice generano eccezioni (`throw`)
 - La memoria è gestita manualmente tramite puntatori
+
+## Autore
+@LucaPrevi0o - Luca Previati
 
 ## Licenza
 MIT
