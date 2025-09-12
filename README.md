@@ -39,10 +39,10 @@ tuple<int> v(5);        // Tuple di 5 elementi
 
 ### Funzioni di utilità
 ```cpp
-auto mt    = tensor::T(m);                                       // Matrice trasposta
-auto trace = tensor::tr(m);                                      // Traccia della matrice
-auto det   = tensor::det(m);                                     // Determinante della matrice
-auto adj   = tensor::adj(m);                                     // Matrice aggiunta
+auto mt    = tensor::T(m);   // Matrice trasposta
+auto trace = tensor::tr(m);  // Traccia della matrice
+auto det   = tensor::det(m); // Determinante della matrice
+auto adj   = tensor::adj(m); // Matrice aggiunta
 
 // Righe e colonne della sottomatrice
 auto row   = tensor::tuple<int>(1);
