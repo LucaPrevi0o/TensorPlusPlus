@@ -1,8 +1,6 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
-// this test commit should ACTUALLY be executed inside TensorPlusPlus repo
-
 namespace tensor {
 
     /**
