@@ -596,11 +596,10 @@ namespace tensor {
     template<typename A>
     matrix<A> dot(matrix<A> a, matrix<A> b) {
 
-        if (a.size()[1] != b.size()[0]) throw "Matrix dimensions do not match for dot product";
-
-        matrix<A> result(a.size()[0], b.size()[1]);
-        for (int i = 0; i < a.size()[0]; i++) for (int j = 0; j < b.size()[1]; j++)
-            for (int k = 0; k < a.size()[1]; k++) result(i, j) += a(i, k) * b(k, j);
+        if (a.size()[0] != b.size()[0] || a.size()[1] != b.size()[1]) throw "Matrices must have the same dimensions for dot product";
+        matrix<A> result(a.size()[0], a.size()[1]);
+        for (int i = 0; i < a.size()[0]; i++) 
+            for (int j = 0; j < a.size()[1]; j++) result(i, j) = a(i, j) * b(i, j);
         return result;
     }
 
