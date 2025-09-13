@@ -344,7 +344,7 @@ namespace tensor {
             tensor operator-=(const tensor& other) {
 
                 // Broadcasting: consenti sottrazione se tutte le dimensioni coincidono tranne una che è 1
-                int broadcast_dim = -1;
+                /*int broadcast_dim = -1;
                 for (int i = 0; i < N; ++i) if (capacity[i] != other.capacity[i]) {
 
                     if (capacity[i] == 1 && other.capacity[i] > 1 && broadcast_dim == -1) broadcast_dim = i;
@@ -377,7 +377,9 @@ namespace tensor {
                         }
                         data[idx] -= other.data[other_idx];
                     }
-                }
+                }*/
+                check_indices(other);
+                for (int i = 0; i < length(); i++) data[i] -= other.data[i];
                 return *this;
             }
 
