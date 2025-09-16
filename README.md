@@ -90,7 +90,7 @@ int main() {
 - La memoria è gestita manualmente tramite puntatori
 
 ## Autore
-@LucaPrevi0o - Luca Previati
+@[LucaPrevi0o](https://github.com/LucaPrevi0o) - Luca Previati
 
 ## Licenza
 MIT
