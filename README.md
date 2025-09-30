@@ -15,26 +15,27 @@ Include operatori matematici, funzioni di utilità per matrici e tuple, e suppor
 ## Utilizzo
 
 ### Inclusione
+La libreria può essere utilizzata come semplice header:
 ```cpp
 #include "tensor.h"
 ```
 
 ### Creazione di un tensore
+La creazione di un nuovo tensore richiede un numero di parametri pari alla dimensione del suo spazio vettoriale, che ne identificano il numero di elementi per ogni direzione:
 ```cpp
 tensor<double, 3> t(2, 3, 4); // Tensore 2x3x4 di double
+```
+E' inoltre possibile utilizzare direttamente gli alias `tuple` e `matrix` per la definizione di tensore 1D e 2D:
+```cpp
+matrix<double> m(3, 3); // Matrice 3x3
+tuple<int> v(5);        // Tuple di 5 elementi
 ```
 
 ### Operazioni
 ```cpp
-auto t2 = t + t;      // Somma tra tensori
-auto t3 = t + 5.0;    // Somma con scalare
-auto t4 = t * 2.0;    // Moltiplicazione con scalare
-```
-
-### Alias
-```cpp
-matrix<double> m(3, 3); // Matrice 3x3
-tuple<int> v(5);        // Tuple di 5 elementi
+auto t2 = t + t;   // Somma tra tensori
+auto t3 = t + 5.0; // Somma con scalare
+auto t4 = t * 2.0; // Moltiplicazione con scalare
 ```
 
 ### Funzioni di utilità
@@ -45,12 +46,12 @@ auto det   = tensor::det(m); // Determinante della matrice
 auto adj   = tensor::adj(m); // Matrice aggiunta
 
 // Righe e colonne della sottomatrice
-auto row   = tensor::tuple<int>(1);
-auto col   = tensor::tuple<int>(2);
+auto row   = tensor::tuple<int>(1); // una riga da rimuovere
+auto col   = tensor::tuple<int>(2); // due colonne da rimuovere
 
-row(0)     = 1; // Riga 1 della matrice da rimuovere
-col(0)     = 3; // Colonna 3 della matrice da rimuovere
-col(1)     = 4; // Colonna 4 della matrice da rimuovere
+row(0) = 1; // Riga 1 della matrice da rimuovere
+col(0) = 3; // Colonna 3 della matrice da rimuovere
+col(1) = 4; // Colonna 4 della matrice da rimuovere
 auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe/colonne
 ```
 
@@ -62,6 +63,7 @@ auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe
 - Metodi statici: `matrix<A> zero(...)` (matrice nulla), `matrix<A> identity(...)` (matrice identità)
 
 ### Funzioni globali
+Operatori matriciali:
 - `matrix<A> T(matrix<A>)` — trasposizione
 - `A tr(matrix<A>)` — traccia
 - `matrix<A> submatrix(matrix<A>, tuple<int>, tuple<int>)` — sottomatrice
@@ -74,20 +76,15 @@ auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe
 using namespace tensor;
 
 int main() {
+
     matrix<double> m(3, 3);
     for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j)
-            m(i, j) = i + j;
+        for (int j = 0; j < 3; ++j) m(i, j) = i + j;
     auto mt = T(m);
-    double trace = tr(m);
-    double detm = det(m);
+    auto trace = tr(m);
+    auto detm = det(m);
 }
 ```
-
-## Note tecniche
-- Tutte le operazioni sono template per efficienza e flessibilità
-- Gli errori di dimensione e indice generano eccezioni (`throw`)
-- La memoria è gestita manualmente tramite puntatori
 
 ## Autore
 @[LucaPrevi0o](https://github.com/LucaPrevi0o) - Luca Previati
