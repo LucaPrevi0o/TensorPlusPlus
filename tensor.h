@@ -1,7 +1,7 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
-#include <stdio.h>
+#include <math.h>
 // TODO: an awful lot of refactoring, especially because of broadcasting
 
 namespace tensor {
@@ -573,9 +573,78 @@ namespace tensor {
     using tuple = tensor<A, 1>;
 
     /**
+     * @brief Sort the elements of a tuple.
+     * 
+     * @tparam A Type of the tuple elements
+     * @param t The tuple to sort
+     * @param ascending Whether to sort in ascending order (default: true)
+     * @return tuple<A> The sorted tuple
+     */
+    template<typename A>
+    tuple<A> sort(tuple<A> t, bool ascending = true) {
+
+        tuple<A> result(t);
+        for (auto i = 0; i < t.size()[0]; i++) for (auto j = i + 1; j < t.size()[0]; j++)
+            if ((ascending && result(i) > result(j)) || (!ascending && result(i) < result(j))) {
+                
+                A temp = result(i);
+                result(i) = result(j);
+                result(j) = temp;
+            }
+        return result;
+    }
+
+    /**
+     * @brief Reverse the order of elements in a tuple.
+     * 
+     * @tparam A Type of the tuple elements
+     * @param t The tuple to reverse
+     * @return tuple<A> The reversed tuple
+     */
+    template<typename A>
+    tuple<A> reverse(const tuple<A>& t) {
+
+        tuple<A> result(t.size()[0]);
+        for (int i = 0; i < t.size()[0]; i++) result(i) = t(t.size()[0] - 1 - i);
+        return result;
+    }
+
+    /**
+     * @brief Calculate the dot product of two tuples.
+     * 
+     * @tparam A Type of the tuple elements
+     * @param a First tuple
+     * @param b Second tuple
+     * @return Dot product of the two tuples
+     */
+    template<typename A>
+    A dot(const tuple<A>& a, const tuple<A>& b) {
+
+        if (a.size()[0] != b.size()[0]) throw "Tuples must have the same size for dot product";
+        A result = A(0);
+        for (int i = 0; i < a.size()[0]; i++) result += a(i) * b(i);
+        return result;
+    }
+
+    /**
+     * @brief Calculate the Euclidean norm (magnitude) of a tuple.
+     * 
+     * @tparam A Type of the tuple elements
+     * @param t The tuple to calculate the norm of
+     * @return Euclidean norm of the tuple
+     */
+    template<typename A>
+    A norm(const tuple<A>& t) {
+
+        A sum = A(0);
+        for (int i = 0; i < t.size()[0]; i++) sum += t(i) * t(i);
+        return sqrt(sum);
+    }
+
+    /**
      * @brief Calculate the dot product (element-wise multiplication) of two matrices.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param a First matrix
      * @param b Second matrix
      * @return Dot product of the two matrices
@@ -593,7 +662,7 @@ namespace tensor {
     /**
      * @brief Calculate the transpose of a matrix.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param mat Matrix to calculate the transpose of
      * @return Transpose of the matrix
      */
@@ -609,7 +678,7 @@ namespace tensor {
     /**
      * @brief Calculate the trace of a matrix.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param mat Matrix to calculate the trace of
      * @return Trace of the matrix
      */
@@ -625,7 +694,7 @@ namespace tensor {
     /**
      * @brief Calculate the submatrix of a matrix, excluding one row and column.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param mat Matrix to calculate the submatrix of
      * @param excludingRow Row to exclude
      * @param excludingCol Column to exclude
@@ -657,7 +726,7 @@ namespace tensor {
     /**
      * @brief Calculate the adjugate of a matrix.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param mat Matrix to calculate the adjugate of
      * @return Adjugate of the matrix
      */
@@ -680,7 +749,7 @@ namespace tensor {
     /**
      * @brief Calculate the determinant of a matrix.
      * 
-     * @tparam T Type of the matrix elements
+     * @tparam A Type of the matrix elements
      * @param mat Matrix to calculate the determinant of
      * @return Determinant of the matrix
      */
