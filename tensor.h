@@ -125,7 +125,7 @@ namespace tensor {
                     int ind = (other.capacity[d] == 1) ? 0 : indices[d];
                     other_idx += ind * other.strides[d];
                 }
-                return data[idx] + other.data[other_idx];
+                return t.data[idx] + other.data[other_idx];
             }
 
             /**
@@ -157,7 +157,7 @@ namespace tensor {
                     int ind = (other.capacity[d] == 1) ? 0 : indices[d];
                     other_idx += ind * other.strides[d];
                 }
-                return data[idx] - other.data[other_idx];
+                return t.data[idx] - other.data[other_idx];
             }
 
         public:
