@@ -63,7 +63,14 @@ auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe
 - Metodi statici: `matrix<A> zero(...)` (matrice nulla), `matrix<A> identity(...)` (matrice identità)
 
 ### Funzioni globali
+Operatori vettoriali:
+- `tuple<A> sort(tuple<A>, bool: true)` - ordinamento (default: ascendente)
+- `tuple<A> reverse(tuple<A>)` - inversione
+- `A dot(tuple<A>, tuple<A>)` - prodotto scalare
+- `A norm(tuple<A>)` - norma euclidea
+
 Operatori matriciali:
+- `matrix<A> dot(matrix<A>, matrix<A>)` - prodotto scalare (elemento per elemento)
 - `matrix<A> T(matrix<A>)` — trasposizione
 - `A tr(matrix<A>)` — traccia
 - `matrix<A> submatrix(matrix<A>, tuple<int>, tuple<int>)` — sottomatrice
