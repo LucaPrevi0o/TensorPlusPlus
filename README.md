@@ -28,7 +28,7 @@ tensor<double, 3> t(2, 3, 4); // Tensore 2x3x4 di double
 E' inoltre possibile utilizzare direttamente gli alias `tuple` e `matrix` per la definizione di tensore 1D e 2D:
 ```cpp
 matrix<double> m(3, 3); // Matrice 3x3
-tuple<int> v(5);        // Tuple di 5 elementi
+tuple<int> v(5);        // Tupla di 5 elementi
 ```
 
 ### Operazioni
@@ -60,7 +60,7 @@ auto subm  = tensor::submatrix(m, row, col); // Sottomatrice rispetto alle righe
 ### Classe `tensor<A, N>`
 - Costruttori: dimensioni variabili, copia, assegnazione
 - Operatori: somma, sottrazione, moltiplicazione
-- Metodi statici: `matrix<A> zero(...)` (matrice nulla), `matrix<A> identity(...)` (matrice identità)
+- Metodi statici: `tensor<A, N> zero(...)` (tensore nullo), `tensor<A, N> identity(...)` (tensore identità)
 
 ### Funzioni globali
 Operatori vettoriali:
