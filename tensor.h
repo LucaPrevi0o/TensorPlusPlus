@@ -178,7 +178,7 @@ namespace tensor {
 
                 if (sizeof...(args) != N) throw "Number of size arguments must match tensor dimensions";
                 int dims[] = {args...};
-                for (int i = 0; i < N; ++i) capacity[i] = dims[i];
+                for (auto i = 0; i < N; ++i) capacity[i] = dims[i];
                 calculate_strides(); // Pre-calculate strides for efficient indexing
                 data = new A[length()]; // Allocate memory for the tensor data
             }
@@ -192,12 +192,12 @@ namespace tensor {
              */
             tensor(const tensor& other) {
 
-                for (int i = 0; i < N; ++i) {
+                for (auto i = 0; i < N; ++i) {
                     capacity[i] = other.capacity[i];
                     strides[i] = other.strides[i];
                 }
                 data = new A[length()];
-                for (int i = 0; i < length(); ++i) data[i] = other.data[i];
+                for (auto i = 0; i < length(); ++i) data[i] = other.data[i];
             }
 
             /**
@@ -226,9 +226,9 @@ namespace tensor {
                 if (sizeof...(args) != N) throw "Number of indices must match tensor dimensions";
                 int indices[] = {args...}; // Pack arguments into array
                 
-                int index = 0;
-                for (int i = 0; i < N; i++) {
-                    
+                auto index = 0;
+                for (auto i = 0; i < N; i++) {
+
                     if (indices[i] < 0 || indices[i] >= capacity[i]) throw "Index out of bounds";
                     index = index * capacity[i] + indices[i];
                 }
@@ -244,11 +244,11 @@ namespace tensor {
              */
             tensor operator+(const tensor& other) const {
 
-                int broadcast_dim = broadcasting_dim(other); // Determine the dimension to be broadcasted, if any
+                auto broadcast_dim = broadcasting_dim(other); // Determine the dimension to be broadcasted, if any
                 tensor result(*this); // Create a new tensor to hold the result
 
-                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) result.data[i] = data[i] + other.data[i];
-                else for (int idx = 0; idx < length(); ++idx) result.data[idx] = tensor::sum_value(*this, other, idx);
+                if (broadcast_dim == -1) for (auto i = 0; i < length(); i++) result.data[i] = data[i] + other.data[i];
+                else for (auto idx = 0; idx < length(); ++idx) result.data[idx] = tensor::sum_value(*this, other, idx);
                 return result;
             }
 
@@ -261,7 +261,7 @@ namespace tensor {
             tensor operator+(const A& scalar) const {
 
                 tensor result(*this); // Create a new tensor to hold the result
-                for (int i = 0; i < length(); i++) result.data[i] = data[i] + scalar; // Add the scalar to each element of the tensor
+                for (auto i = 0; i < length(); i++) result.data[i] = data[i] + scalar; // Add the scalar to each element of the tensor
                 return result; // Return the resulting tensor
             }
 
@@ -275,7 +275,7 @@ namespace tensor {
             friend tensor operator+(const A& scalar, const tensor& t) {
 
                 tensor result(t); // Create a new tensor to hold the result
-                for (int i = 0; i < t.length(); i++) result.data[i] = scalar + t.data[i]; // Add the scalar to each element of the tensor
+                for (auto i = 0; i < t.length(); i++) result.data[i] = scalar + t.data[i]; // Add the scalar to each element of the tensor
                 return result; // Return the resulting tensor
             }
 
@@ -288,10 +288,10 @@ namespace tensor {
              */
             tensor operator+=(const tensor& other) {
 
-                int broadcast_dim = broadcasting_dim(other); // Determine the dimension to be broadcasted, if any
+                auto broadcast_dim = broadcasting_dim(other); // Determine the dimension to be broadcasted, if any
 
-                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) data[i] += other.data[i];
-                else for (int idx = 0; idx < length(); ++idx) data[idx] = tensor::sum_value(*this, other, idx);
+                if (broadcast_dim == -1) for (auto i = 0; i < length(); i++) data[i] += other.data[i];
+                else for (auto idx = 0; idx < length(); ++idx) data[idx] = tensor::sum_value(*this, other, idx);
                 return *this;
             }
 
@@ -303,7 +303,7 @@ namespace tensor {
              */
             tensor operator+=(const A& scalar) {
 
-                for (int i = 0; i < length(); i++) data[i] += scalar; // Add the scalar to each element of the tensor
+                for (auto i = 0; i < length(); i++) data[i] += scalar; // Add the scalar to each element of the tensor
                 return *this; // Return the current tensor
             }
 
@@ -317,11 +317,11 @@ namespace tensor {
             tensor operator-(const tensor& other) const {
 
                 // Broadcasting: consenti sottrazione se tutte le dimensioni coincidono tranne una che è 1
-                int broadcast_dim = broadcasting_dim(other);
+                auto broadcast_dim = broadcasting_dim(other);
 
                 tensor result(*this);
-                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) result.data[i] = data[i] - other.data[i];
-                else for (int idx = 0; idx < length(); ++idx) result.data[idx] = tensor::sub_value(*this, other, idx);
+                if (broadcast_dim == -1) for (auto i = 0; i < length(); i++) result.data[i] = data[i] - other.data[i];
+                else for (auto idx = 0; idx < length(); ++idx) result.data[idx] = tensor::sub_value(*this, other, idx);
                 return result;
             }
 
@@ -334,7 +334,7 @@ namespace tensor {
             tensor operator-(const A& scalar) const {
 
                 tensor result(*this); // Create a new tensor to hold the result
-                for (int i = 0; i < length(); i++) result.data[i] = data[i] - scalar; // Subtract the scalar from each element of the tensor
+                for (auto i = 0; i < length(); i++) result.data[i] = data[i] - scalar; // Subtract the scalar from each element of the tensor
                 return result; // Return the resulting tensor
             }
 
@@ -348,7 +348,7 @@ namespace tensor {
             friend tensor operator-(const A& scalar, const tensor& t) {
 
                 tensor result(t); // Create a new tensor to hold the result
-                for (int i = 0; i < t.length(); i++) result.data[i] = scalar - t.data[i]; // Subtract the scalar from each element of the tensor
+                for (auto i = 0; i < t.length(); i++) result.data[i] = scalar - t.data[i]; // Subtract the scalar from each element of the tensor
                 return result; // Return the resulting tensor
             }
 
@@ -362,10 +362,10 @@ namespace tensor {
             tensor operator-=(const tensor& other) {
 
                 // Broadcasting: consenti sottrazione se tutte le dimensioni coincidono tranne una che è 1
-                int broadcast_dim = broadcasting_dim(other);
+                auto broadcast_dim = broadcasting_dim(other);
 
-                if (broadcast_dim == -1) for (int i = 0; i < length(); i++) data[i] -= other.data[i];
-                else for (int idx = 0; idx < length(); ++idx) data[idx] = tensor::sub_value(*this, other, idx);
+                if (broadcast_dim == -1) for (auto i = 0; i < length(); i++) data[i] -= other.data[i];
+                else for (auto idx = 0; idx < length(); ++idx) data[idx] = tensor::sub_value(*this, other, idx);
                 return *this;
             }
             
@@ -387,25 +387,25 @@ namespace tensor {
 
                 // Calcola le dimensioni del tensore risultato
                 int new_dims[N + M - 2], idx = 0;
-                for (int i = 0; i < N - 1; ++i) new_dims[idx++] = capacity[i];
-                for (int i = 1; i < M; ++i) new_dims[idx++] = other.capacity[i];
+                for (auto i = 0; i < N - 1; ++i) new_dims[idx++] = capacity[i];
+                for (auto i = 1; i < M; ++i) new_dims[idx++] = other.capacity[i];
 
                 tensor<A, N + M - 2> result(new_dims);
 
                 // Calcola il numero di elementi da contrarre
-                int contracted = capacity[N - 1];
+                auto contracted = capacity[N - 1];
 
                 // Calcola il numero di elementi nelle parti non contratte
-                int left_size = 1;
-                for (int i = 0; i < N - 1; ++i) left_size *= capacity[i];
-                int right_size = 1;
-                for (int i = 1; i < M; ++i) right_size *= other.capacity[i];
+                auto left_size = 1;
+                for (auto i = 0; i < N - 1; ++i) left_size *= capacity[i];
+                auto right_size = 1;
+                for (auto i = 1; i < M; ++i) right_size *= other.capacity[i];
 
-                for (int i = 0; i < left_size; ++i)
-                    for (int j = 0; j < right_size; ++j) {
+                for (auto i = 0; i < left_size; ++i)
+                    for (auto j = 0; j < right_size; ++j) {
 
-                        A sum = 0;
-                        for (int k = 0; k < contracted; ++k) sum += data[i * contracted + k] * other.data[k * right_size + j];
+                        auto sum = A(0);
+                        for (auto k = 0; k < contracted; ++k) sum += data[i * contracted + k] * other.data[k * right_size + j];
                         result.data[i * right_size + j] = sum;
                     }
 
@@ -421,7 +421,7 @@ namespace tensor {
             tensor operator*(const A& scalar) const {
 
                 tensor result(*this); // Create a new tensor to hold the result
-                for (int i = 0; i < length(); i++) result.data[i] = data[i] * scalar; // Multiply each element of the tensor by the scalar
+                for (auto i = 0; i < length(); i++) result.data[i] = data[i] * scalar; // Multiply each element of the tensor by the scalar
                 return result; // Return the resulting tensor
             }
 
@@ -435,13 +435,13 @@ namespace tensor {
             friend tensor operator*(const A& scalar, const tensor& t) {
 
                 tensor result(t); // Create a new tensor to hold the result
-                for (int i = 0; i < t.length(); i++) result.data[i] = scalar * t.data[i]; // Multiply each element of the tensor by the scalar
+                for (auto i = 0; i < t.length(); i++) result.data[i] = scalar * t.data[i]; // Multiply each element of the tensor by the scalar
                 return result; // Return the resulting tensor
             }
 
             tensor operator*=(const A& scalar) {
 
-                for (int i = 0; i < length(); i++) data[i] *= scalar; // Multiply each element of the tensor by the scalar
+                for (auto i = 0; i < length(); i++) data[i] *= scalar; // Multiply each element of the tensor by the scalar
                 return *this; // Return the current tensor
             }
 
@@ -455,9 +455,9 @@ namespace tensor {
              */
             bool operator==(const tensor& other) const {
 
-                for (int i = 0; i < N; i++)
+                for (auto i = 0; i < N; i++)
                     if (capacity[i] != other.capacity[i]) return false; // Check if the sizes of the dimensions match
-                for (int i = 0; i < length(); i++)
+                for (auto i = 0; i < length(); i++)
                     if (data[i] != other.data[i]) return false; // Check if the elements are equal
                 return true; // Tensors are equal
             }
@@ -485,13 +485,13 @@ namespace tensor {
                 if (this == &other) return *this; // Check for self-assignment
 
                 delete[] data; // Delete the old data
-                for (int i = 0; i < N; i++) {
+                for (auto i = 0; i < N; i++) {
                     
                     capacity[i] = other.capacity[i]; // Copy the sizes of the dimensions
                     strides[i] = other.strides[i]; // Copy the strides
                 }
                 data = new A[length()]; // Allocate new memory for the tensor data
-                for (int i = 0; i < length(); i++) data[i] = other.data[i]; // Copy the elements of the tensor
+                for (auto i = 0; i < length(); i++) data[i] = other.data[i]; // Copy the elements of the tensor
                 return *this; // Return the current tensor
             }
 
@@ -505,7 +505,7 @@ namespace tensor {
              */
             tensor& operator=(const A* arr) {
 
-                for (int i = 0; i < length(); i++) data[i] = arr[i]; // Copy the elements from the array
+                for (auto i = 0; i < length(); i++) data[i] = arr[i]; // Copy the elements from the array
                 return *this; // Return the current tensor
             }
 
@@ -519,7 +519,7 @@ namespace tensor {
             static const tensor zero(Args... args) {
 
                 tensor result(args...); // Create a new tensor to hold the result
-                for (int i = 0; i < result.length(); i++) result.data[i] = 0; // Initialize all elements to zero
+                for (auto i = 0; i < result.length(); i++) result.data[i] = 0; // Initialize all elements to zero
                 return result; // Return the resulting tensor
             }
 
@@ -539,21 +539,21 @@ namespace tensor {
                 // Check if the tensor is square
                 int dims[] = {args...};
                 if (sizeof...(args) != N) throw "Number of size arguments must match tensor dimensions";
-                for (int i = 0; i < N - 1; i++)
+                for (auto i = 0; i < N - 1; i++)
                     if (dims[i] != dims[i + 1]) throw "Identity tensor must be square";
 
                 tensor result(args...); // Create a new tensor to hold the result
                 // Inizializza tutti a zero
-                for (int i = 0; i < result.length(); i++) result.data[i] = 0;
+                for (auto i = 0; i < result.length(); i++) result.data[i] = 0;
 
                 // Imposta a 1 solo le posizioni dove tutti gli indici sono uguali
-                int size = dims[0];
+                auto size = dims[0];
                 // Genera tutte le tuple (i, i, ..., i)
-                for (int i = 0; i < size; ++i) {
+                for (auto i = 0; i < size; ++i) {
                     
                     // Calcola l'indice lineare corrispondente a (i, i, ..., i)
-                    int idx = 0;
-                    for (int d = 0; d < N; ++d) idx = idx * size + i;
+                    auto idx = 0;
+                    for (auto d = 0; d < N; ++d) idx = idx * size + i;
                     result.data[idx] = 1;
                 }
 
@@ -614,7 +614,7 @@ namespace tensor {
     tuple<A> reverse(const tuple<A>& t) {
 
         tuple<A> result(t.size(0));
-        for (int i = 0; i < t.size(0); i++) result(i) = t(t.size(0) - 1 - i);
+        for (auto i = 0; i < t.size(0); i++) result(i) = t(t.size(0) - 1 - i);
         return result;
     }
 
@@ -630,8 +630,8 @@ namespace tensor {
     A dot(const tuple<A>& a, const tuple<A>& b) {
 
         if (a.size(0) != b.size(0)) throw "Tuples must have the same size for dot product";
-        A result = A(0);
-        for (int i = 0; i < a.size(0); i++) result += a(i) * b(i);
+        auto result = A(0);
+        for (auto i = 0; i < a.size(0); i++) result += a(i) * b(i);
         return result;
     }
 
@@ -648,8 +648,8 @@ namespace tensor {
 
         if (a.size(0) != b.size(0) || a.size(1) != b.size(1)) throw "Matrices must have the same dimensions for dot product";
         matrix<A> result(a.size(0), a.size(1));
-        for (int i = 0; i < a.size(0); i++) 
-            for (int j = 0; j < a.size(1); j++) result(i, j) = a(i, j) * b(i, j);
+        for (auto i = 0; i < a.size(0); i++) 
+            for (auto j = 0; j < a.size(1); j++) result(i, j) = a(i, j) * b(i, j);
         return result;
     }
 
@@ -664,8 +664,8 @@ namespace tensor {
     matrix<A> T(matrix<A> mat) {
 
         matrix<A> result(mat.size(1), mat.size(0));
-        for (int i = 0; i < mat.size(0); i++) 
-            for (int j = 0; j < mat.size(1); j++) result(j, i) = mat(i, j);
+        for (auto i = 0; i < mat.size(0); i++) 
+            for (auto j = 0; j < mat.size(1); j++) result(j, i) = mat(i, j);
         return result;
     }
 
@@ -681,7 +681,7 @@ namespace tensor {
 
         if (mat.size(0) != mat.size(1)) throw "Matrix is not square";
         auto result = A(0);
-        for (int i = 0; i < mat.size(0); i++) result += mat(i, i);
+        for (auto i = 0; i < mat.size(0); i++) result += mat(i, i);
         return result;
     }
 
