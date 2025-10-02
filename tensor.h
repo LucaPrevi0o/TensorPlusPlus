@@ -1,9 +1,6 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
-#include <math.h>
-// TODO: an awful lot of refactoring, especially because of broadcasting
-
 namespace tensor {
 
     /**
@@ -241,8 +238,6 @@ namespace tensor {
             /**
              * @brief Add two tensors element-wise.
              * 
-             * Broadcasting is supported: allows addition if all dimensions match except one which is 1.
-             * 
              * @param other The tensor to add to this tensor
              * @return A new tensor containing the result of the addition
              * @throw "Tensors have different sizes" if the tensors have different sizes
@@ -286,8 +281,6 @@ namespace tensor {
 
             /**
              * @brief Add another tensor to this tensor element-wise.
-             * 
-             * Broadcasting is supported: allows addition if all dimensions match except one which is 1.
              * 
              * @param other The tensor to add to this tensor
              * @return Reference to the current tensor after addition
@@ -516,6 +509,12 @@ namespace tensor {
                 return *this; // Return the current tensor
             }
 
+            /**
+             * @brief Create a tensor filled with zeros.
+             * 
+             * @param args Variable number of size arguments (must match tensor dimensions N)
+             * @return A new tensor filled with zeros
+             */
             template<typename... Args>
             static const tensor zero(Args... args) {
 
@@ -524,6 +523,16 @@ namespace tensor {
                 return result; // Return the resulting tensor
             }
 
+            /**
+             * @brief Create an identity tensor.
+             * 
+             * An identity tensor has ones on the diagonal and zeros elsewhere.
+             * 
+             * @param args Variable number of size arguments (must match tensor dimensions N)
+             * @return A new identity tensor
+             * @throw "Number of size arguments must match tensor dimensions" if the number of size arguments does not match tensor dimensions
+             * @throw "Identity tensor must be square" if the tensor is not square
+             */
             template<typename... Args>
             static const tensor identity(Args... args) {
 
@@ -578,16 +587,16 @@ namespace tensor {
      * @tparam A Type of the tuple elements
      * @param t The tuple to sort
      * @param ascending Whether to sort in ascending order (default: true)
-     * @return tuple<A> The sorted tuple
+     * @return The sorted tuple
      */
     template<typename A>
     tuple<A> sort(tuple<A> t, bool ascending = true) {
 
         tuple<A> result(t);
-        for (auto i = 0; i < t.size()[0]; i++) for (auto j = i + 1; j < t.size()[0]; j++)
+        for (auto i = 0; i < t.size(0); i++) for (auto j = i + 1; j < t.size(0); j++)
             if ((ascending && result(i) > result(j)) || (!ascending && result(i) < result(j))) {
                 
-                A temp = result(i);
+                auto temp = result(i);
                 result(i) = result(j);
                 result(j) = temp;
             }
@@ -599,13 +608,13 @@ namespace tensor {
      * 
      * @tparam A Type of the tuple elements
      * @param t The tuple to reverse
-     * @return tuple<A> The reversed tuple
+     * @return The reversed tuple
      */
     template<typename A>
     tuple<A> reverse(const tuple<A>& t) {
 
-        tuple<A> result(t.size()[0]);
-        for (int i = 0; i < t.size()[0]; i++) result(i) = t(t.size()[0] - 1 - i);
+        tuple<A> result(t.size(0));
+        for (int i = 0; i < t.size(0); i++) result(i) = t(t.size(0) - 1 - i);
         return result;
     }
 
@@ -620,25 +629,10 @@ namespace tensor {
     template<typename A>
     A dot(const tuple<A>& a, const tuple<A>& b) {
 
-        if (a.size()[0] != b.size()[0]) throw "Tuples must have the same size for dot product";
+        if (a.size(0) != b.size(0)) throw "Tuples must have the same size for dot product";
         A result = A(0);
-        for (int i = 0; i < a.size()[0]; i++) result += a(i) * b(i);
+        for (int i = 0; i < a.size(0); i++) result += a(i) * b(i);
         return result;
-    }
-
-    /**
-     * @brief Calculate the Euclidean norm (magnitude) of a tuple.
-     * 
-     * @tparam A Type of the tuple elements
-     * @param t The tuple to calculate the norm of
-     * @return Euclidean norm of the tuple
-     */
-    template<typename A>
-    A norm(const tuple<A>& t) {
-
-        A sum = A(0);
-        for (int i = 0; i < t.size()[0]; i++) sum += t(i) * t(i);
-        return sqrt(sum);
     }
 
     /**
@@ -652,10 +646,10 @@ namespace tensor {
     template<typename A>
     matrix<A> dot(matrix<A> a, matrix<A> b) {
 
-        if (a.size()[0] != b.size()[0] || a.size()[1] != b.size()[1]) throw "Matrices must have the same dimensions for dot product";
-        matrix<A> result(a.size()[0], a.size()[1]);
-        for (int i = 0; i < a.size()[0]; i++) 
-            for (int j = 0; j < a.size()[1]; j++) result(i, j) = a(i, j) * b(i, j);
+        if (a.size(0) != b.size(0) || a.size(1) != b.size(1)) throw "Matrices must have the same dimensions for dot product";
+        matrix<A> result(a.size(0), a.size(1));
+        for (int i = 0; i < a.size(0); i++) 
+            for (int j = 0; j < a.size(1); j++) result(i, j) = a(i, j) * b(i, j);
         return result;
     }
 
@@ -669,9 +663,9 @@ namespace tensor {
     template<typename A>
     matrix<A> T(matrix<A> mat) {
 
-        matrix<A> result(mat.size()[1], mat.size()[0]);
-        for (int i = 0; i < mat.size()[0]; i++) 
-            for (int j = 0; j < mat.size()[1]; j++) result(j, i) = mat(i, j);
+        matrix<A> result(mat.size(1), mat.size(0));
+        for (int i = 0; i < mat.size(0); i++) 
+            for (int j = 0; j < mat.size(1); j++) result(j, i) = mat(i, j);
         return result;
     }
 
@@ -685,9 +679,9 @@ namespace tensor {
     template<typename A>
     A tr(matrix<A> mat) {
 
-        if (mat.size()[0] != mat.size()[1]) throw "Matrix is not square";
-        A result = A(0);
-        for (int i = 0; i < mat.size()[0]; i++) result += mat(i, i);
+        if (mat.size(0) != mat.size(1)) throw "Matrix is not square";
+        auto result = A(0);
+        for (int i = 0; i < mat.size(0); i++) result += mat(i, i);
         return result;
     }
 
@@ -704,17 +698,17 @@ namespace tensor {
     template<typename A>
     matrix<A> submatrix(matrix<A> mat, tuple<int> del_rows, tuple<int> del_cols) {
 
-        matrix<A> result(mat.size()[0] - del_rows.size()[0], mat.size()[1] - del_cols.size()[0]);
-        int r = -1, q = 0;
-        for (int i = 0; i < mat.size()[0]; i++) {
+        matrix<A> result(mat.size(0) - del_rows.size(0), mat.size(1) - del_cols.size(0));
+        auto r = -1, q = 0;
+        for (auto i = 0; i < mat.size(0); i++) {
 
-            for (int j = 0; j < del_rows.size()[0]; j++) if (i == del_rows(j)) q = 1;
+            for (auto j = 0; j < del_rows.size(0); j++) if (i == del_rows(j)) q = 1;
             if (q) { q = 0; continue; }
             r++;
-            int c = -1;
-            for (int j = 0; j < mat.size()[1]; j++) {
+            auto c = -1;
+            for (auto j = 0; j < mat.size(1); j++) {
 
-                for (int k = 0; k < del_cols.size()[0]; k++) if (j == del_cols(k)) q = 1;
+                for (auto k = 0; k < del_cols.size(0); k++) if (j == del_cols(k)) q = 1;
                 if (q) { q = 0; continue; }
                 c++;
                 result(r, c) = mat(i, j);
@@ -733,17 +727,17 @@ namespace tensor {
     template<typename A>
     matrix<A> adj(matrix<A> mat) {
 
-        if (mat.size()[0] != mat.size()[1]) throw "Matrix is not square";
-        matrix<A> result(mat.size()[0], mat.size()[1]);
-        for (int i = 0; i < mat.size()[0]; i++)
-            for (int j = 0; j < mat.size()[1]; j++) {
+        if (mat.size(0) != mat.size(1)) throw "Matrix is not square";
+        matrix<A> result(mat.size(0), mat.size(1));
+        for (auto i = 0; i < mat.size(0); i++)
+            for (auto j = 0; j < mat.size(1); j++) {
 
                 tuple<int> del_row(1); del_row(0) = i;
                 tuple<int> del_col(1); del_col(0) = j;
-                matrix<A> subm = submatrix(mat, del_row, del_col);
+                auto subm = submatrix(mat, del_row, del_col);
                 result(i, j) = det(subm) * ((i + j) % 2 == 0 ? (A)1 : (A)(-1));
             }
-        return A(result);
+        return result;
     }
 
     /**
@@ -756,12 +750,12 @@ namespace tensor {
     template<typename A>
     A det(matrix<A> mat) {
 
-        if (mat.size()[0] != mat.size()[1]) throw "Matrix is not square";
-        else if (mat.size()[0] == 1) return mat(0, 0);
+        if (mat.size(0) != mat.size(1)) throw "Matrix is not square";
+        else if (mat.size(0) == 1) return mat(0, 0);
         else {
 
-            A res = A(0);
-            for (int p = 0; p < mat.size()[0]; p++) {
+            auto res = A(0);
+            for (auto p = 0; p < mat.size(0); p++) {
 
                 tuple<int> del_row(1); del_row(0) = 0;
                 tuple<int> del_col(1); del_col(0) = p;

@@ -67,7 +67,6 @@ Operatori vettoriali:
 - `tuple<A> sort(tuple<A>, bool: true)` - ordinamento (default: ascendente)
 - `tuple<A> reverse(tuple<A>)` - inversione
 - `A dot(tuple<A>, tuple<A>)` - prodotto scalare
-- `A norm(tuple<A>)` - norma euclidea
 
 Operatori matriciali:
 - `matrix<A> dot(matrix<A>, matrix<A>)` - prodotto scalare (elemento per elemento)
